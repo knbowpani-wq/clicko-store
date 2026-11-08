@@ -224,7 +224,34 @@ let db=null,rows=[],editing=null,authorized=false,loading=false,photoRows=[];
 const money=n=>n===null||n===undefined?'สอบถามราคา':'฿'+Number(n).toLocaleString('th-TH');
 const fields=['sku','name','category','sub','condition','price','warranty','stock_status','specs','note','image','manufacturer_image_url','manufacturer_source_url'];
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function edit(p){editing=p?.sku||null;visible('editor',true);visible('mobile-add',false);$('editor-title').textContent=editing?'แก้ไขสินค้า '+editing:'เพิ่มสินค้าใหม่';fields.forEach(k=>$(k).value=p?.[k]??(k==='stock_status'?'available':''));$('manufacturer_image_verified').checked=!!p?.manufacturer_image_verified;$('sku').readOnly=!!editing;$('stock_status').value=p?.stock_status||(p?.sold?'sold':'available');$('box-search').href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent((p?.name||'')+' retail box packaging');$('photo').value='';$('extra-photos').value='';$('preview').src=p?.image||'';visible('preview',!!p?.image);$('remove').disabled=!editing;$('remove').textContent=p?.is_hidden?'นำกลับมาแสดง':'ซ่อนจากหน้าร้าน';renderPhotoGallery();$('editor').scrollIntoView({behavior:'smooth'});}
+function nextClickoSku(values){
+ let max=0;
+ for(const value of values){const m=/^CLK-(\\d+)$/i.exec(String(value||''));if(m)max=Math.max(max,Number(m[1]));}
+ return 'CLK-'+String(max+1).padStart(3,'0');
+}
+async function suggestNextSku(){
+ if(!authorized||editing)return;
+ const field=$('sku');
+ field.readOnly=true;
+ field.value='กำลังตรวจสอบเลขล่าสุด...';
+ try{
+  // Include sold and hidden SKUs so old identifiers are never reused.
+  const all=[],size=1000;
+  for(let from=0;from<100000;from+=size){
+   const {data,error}=await db.from('clicko_products').select('sku').like('sku','CLK-%').range(from,from+size-1);
+   if(error)throw error;
+   all.push(...(data||[]).map(p=>p.sku));
+   if(!data||data.length<size)break;
+  }
+  if(editing)return;
+  field.value=nextClickoSku(all);
+  notice('กำหนดรหัสสินค้า '+field.value+' อัตโนมัติแล้ว');
+ }catch(err){
+  field.value=nextClickoSku(rows.map(p=>p.sku));
+  notice('ไม่สามารถตรวจเลขล่าสุดจากฐานข้อมูลได้ ใช้เลขจากรายการที่โหลดไว้ · '+err.message);
+ }finally{field.readOnly=true;}
+}
+function edit(p){editing=p?.sku||null;visible('editor',true);visible('mobile-add',false);$('editor-title').textContent=editing?'แก้ไขสินค้า '+editing:'เพิ่มสินค้าใหม่';fields.forEach(k=>$(k).value=p?.[k]??(k==='stock_status'?'available':''));$('manufacturer_image_verified').checked=!!p?.manufacturer_image_verified;$('sku').readOnly=!!editing;$('stock_status').value=p?.stock_status||(p?.sold?'sold':'available');$('box-search').href='https://www.google.com/search?tbm=isch&q='+encodeURIComponent((p?.name||'')+' retail box packaging');$('photo').value='';$('extra-photos').value='';$('preview').src=p?.image||'';visible('preview',!!p?.image);$('remove').disabled=!editing;$('remove').textContent=p?.is_hidden?'นำกลับมาแสดง':'ซ่อนจากหน้าร้าน';renderPhotoGallery();if(!editing)void suggestNextSku();$('editor').scrollIntoView({behavior:'smooth'});}
 const STOCK_LABELS={available:'พร้อมขาย',reserved:'จองแล้ว',sold:'ขายแล้ว'};
 function stockStatus(p){return ['available','reserved','sold'].includes(p.stock_status)?p.stock_status:(p.sold?'sold':'available');}
 function stockOptions(selected){return Object.keys(STOCK_LABELS).map(k=>'<option value="'+k+'"'+(k===selected?' selected':'')+'>'+STOCK_LABELS[k]+'</option>').join('');}
@@ -366,7 +393,7 @@ $('photo-gallery-admin').addEventListener('click',async e=>{
  if(error){b.disabled=false;notice('เอารูปออกไม่สำเร็จ: '+error.message);return;}
  await load();notice('เอารูปเสริมออกจากหน้าร้านแล้ว');
 });
-$('product-form').onsubmit=async e=>{e.preventDefault();if(!authorized)return;const sku=$('sku').value.trim();if(!/^[a-zA-Z0-9_-]{2,50}$/.test(sku)){notice('รหัสสินค้าใช้ได้เฉพาะตัวอักษร ตัวเลข - และ _');return;}const current=editing?rows.find(row=>row.sku===sku):null;const priceValue=$('price').value.trim();if(priceValue!==''&&(!Number.isFinite(Number(priceValue))||Number(priceValue)<0||Math.abs(Number(priceValue)*100-Math.round(Number(priceValue)*100))>0.000001)){notice('ราคาไม่ถูกต้อง ต้องเป็นจำนวนบวกและทศนิยมไม่เกิน 2 ตำแหน่ง');return;}const manufacturerUrl=$('manufacturer_image_url').value.trim(),manufacturerSource=$('manufacturer_source_url').value.trim();
+$('product-form').onsubmit=async e=>{e.preventDefault();if(!authorized)return;const sku=$('sku').value.trim();if(!editing){const {data:latest,error:skuError}=await db.from('clicko_products').select('sku').eq('sku',sku).maybeSingle();if(skuError){notice('ตรวจสอบรหัสสินค้าไม่สำเร็จ: '+skuError.message);return;}if(latest){notice('รหัส '+sku+' ถูกใช้แล้ว กำลังหาเลขถัดไป');await suggestNextSku();return;}}if(!/^[a-zA-Z0-9_-]{2,50}$/.test(sku)){notice('รหัสสินค้าใช้ได้เฉพาะตัวอักษร ตัวเลข - และ _');return;}const current=editing?rows.find(row=>row.sku===sku):null;const priceValue=$('price').value.trim();if(priceValue!==''&&(!Number.isFinite(Number(priceValue))||Number(priceValue)<0||Math.abs(Number(priceValue)*100-Math.round(Number(priceValue)*100))>0.000001)){notice('ราคาไม่ถูกต้อง ต้องเป็นจำนวนบวกและทศนิยมไม่เกิน 2 ตำแหน่ง');return;}const manufacturerUrl=$('manufacturer_image_url').value.trim(),manufacturerSource=$('manufacturer_source_url').value.trim();
  const manufacturerVerified=$('manufacturer_image_verified').checked;
  if(manufacturerVerified&&(!/^https:\/\/\S+$/i.test(manufacturerUrl)||!/^https:\/\/\S+$/i.test(manufacturerSource))){notice('ภาพผู้ผลิตที่ยืนยันแล้วต้องมีลิงก์ภาพและหน้าต้นทาง HTTPS ครบทั้งคู่');return;}
  const p={sku,manufacturer_image_url:manufacturerUrl||null,manufacturer_source_url:manufacturerSource||null,manufacturer_image_verified:manufacturerVerified,updated_at:new Date().toISOString(),name:$('name').value.trim(),category:$('category').value,sub:$('sub').value.trim(),condition:$('condition').value,price:$('price').value===''?null:Number($('price').value),warranty:$('warranty').value.trim(),stock_status:$('stock_status').value,sold:$('stock_status').value==='sold',is_hidden:!!current?.is_hidden,...(current?.created_at?{created_at:current.created_at}:{}),specs:$('specs').value.trim(),note:$('note').value.trim(),image:$('image').value.trim()};$('save').disabled=true;notice('กำลังบันทึก...');try{const file=$('photo').files[0];if(file){if(file.size>5*1024*1024||!['image/jpeg','image/png','image/webp'].includes(file.type))throw Error('รองรับเฉพาะ JPG PNG WEBP ขนาดไม่เกิน 5 MB');const ext=({'image/jpeg':'jpg','image/png':'png','image/webp':'webp'})[file.type];const path=sku+'/'+crypto.randomUUID()+'.'+ext;const {error}=await db.storage.from('product-images').upload(path,file,{contentType:file.type,upsert:false});if(error)throw error;p.image=db.storage.from('product-images').getPublicUrl(path).data.publicUrl;}let result;
