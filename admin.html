@@ -226,7 +226,7 @@ const fields=['sku','name','category','sub','condition','price','warranty','stoc
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function nextClickoSku(values){
  let max=0;
- for(const value of values){const m=/^CLK-(\\d+)$/i.exec(String(value||''));if(m)max=Math.max(max,Number(m[1]));}
+ for(const value of values){const m=/^CLK-(\d+)$/i.exec(String(value||''));if(m)max=Math.max(max,Number(m[1]));}
  return 'CLK-'+String(max+1).padStart(3,'0');
 }
 async function suggestNextSku(){
