@@ -368,14 +368,14 @@ const clickoStamp=()=>new Date().toISOString().slice(0,19).replace(/[:T]/g,'-');
 function clickoCsvCell(v){
  let value=v===null||v===undefined?'':typeof v==='object'?JSON.stringify(v):String(v);
  // Prevent spreadsheet formula execution when importing exports into Excel/Sheets.
- if(/^[\\s]*[=+@-]/.test(value))value="'"+value;
+ if(/^[\s]*[=+@-]/.test(value))value="'"+value;
  return '"'+value.replace(/"/g,'""')+'"';
 }
 function clickoExportCsv(){
  if(!authorized)return;
  const columns=['sku','name','category','sub','condition','price','warranty','stock_status','sold','is_hidden','specs','note','image','manufacturer_image_url','manufacturer_source_url','manufacturer_image_verified','created_at','updated_at'];
  const lines=[columns.map(clickoCsvCell).join(','),...rows.map(p=>columns.map(k=>clickoCsvCell(p[k])).join(','))];
- clickoDownload('clicko-stock-'+clickoStamp()+'.csv','\\uFEFF'+lines.join('\\r\\n'),'text/csv;charset=utf-8');
+ clickoDownload('clicko-stock-'+clickoStamp()+'.csv','\uFEFF'+lines.join('\r\n'),'text/csv;charset=utf-8');
  notice('สำรอง CSV '+rows.length+' รายการแล้ว (รวมสินค้าที่ซ่อนและขายแล้ว)');
 }
 function clickoExportJson(){
@@ -401,7 +401,7 @@ function clickoFacebookText(items){
   out.push('');
  }
  out.push('สนใจทัก Inbox ได้เลยครับ','รับซื้อ / รับเทิร์น / แลกเปลี่ยน','นัดรับหรือจัดส่งทั่วไทย','เช็กสินค้าล่าสุด: https://clicko-store.github.io/');
- return out.join('\\n');
+ return out.join('\n');
 }
 async function clickoCopyFacebook(){
  if(!authorized)return;
