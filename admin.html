@@ -384,23 +384,39 @@ function clickoExportJson(){
  notice('สำรอง JSON '+rows.length+' รายการ และข้อมูลรูปเสริมแล้ว (ไม่รวมไฟล์รูปต้นฉบับ)');
 }
 function clickoFacebookText(items){
+ // Compact Facebook format: category > condition > product. Stable ordering, no long inline notes.
+ const categoryOrder=['PC PARTS','GAMING MOUSE','GAMEPAD & USB HUB','KEYBOARD','MOUSEPAD','AUDIO','MONITOR & ACCESSORIES'];
  const grouped=new Map();
  for(const p of items){
-  const category=p.category||'อื่นๆ';
+  const category=(p.category||'อื่นๆ').trim()||'อื่นๆ';
   if(!grouped.has(category))grouped.set(category,[]);
   grouped.get(category).push(p);
  }
- const out=['CLICKO | GAMING GEAR & PC PARTS','อัปเดตสินค้าพร้อมขาย',''];
- for(const [category,products] of grouped){
+ const sortedCategories=[...grouped.keys()].sort((a,b)=>{
+  const ai=categoryOrder.indexOf(a),bi=categoryOrder.indexOf(b);
+  return (ai<0?999:ai)-(bi<0?999:bi)||a.localeCompare(b,'th');
+ });
+ const out=['CLICKO | GAMING GEAR & PC PARTS','อัปเดตสินค้าพร้อมขาย · '+items.length+' รายการ',''];
+ for(const category of sortedCategories){
+  const products=grouped.get(category);
   out.push('【'+category+'】');
-  for(const p of products){
-   const condition=p.condition==='มือ1'?'มือ 1':'มือ 2';
-   const price=p.price===null||p.price===undefined?'สอบถามราคา':Number(p.price).toLocaleString('th-TH')+' บาท';
-   out.push('• '+p.name+' ('+condition+') — '+price+(p.warranty?' | ประกัน '+p.warranty:'')+(p.note?' | '+p.note:''));
+  for(const [condition,label] of [['มือ1','มือ 1'],['มือ2','มือ 2']]){
+   const section=products.filter(p=>p.condition===condition).sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'th',{numeric:true}));
+   if(!section.length)continue;
+   out.push(label);
+   for(const p of section){
+    const price=p.price===null||p.price===undefined||p.price===''?'สอบถามราคา':Number(p.price).toLocaleString('th-TH')+' บาท';
+    out.push('• '+String(p.name||'ไม่ระบุชื่อ').trim()+' — '+price+(p.warranty?' | ประกัน '+String(p.warranty).trim():''));
+   }
+  }
+  const other=products.filter(p=>p.condition!=='มือ1'&&p.condition!=='มือ2').sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'th',{numeric:true}));
+  if(other.length){
+   out.push('ไม่ระบุสภาพ');
+   for(const p of other)out.push('• '+String(p.name||'ไม่ระบุชื่อ').trim()+' — '+(p.price===null||p.price===undefined?'สอบถามราคา':Number(p.price).toLocaleString('th-TH')+' บาท')+(p.warranty?' | ประกัน '+String(p.warranty).trim():''));
   }
   out.push('');
  }
- out.push('สนใจทัก Inbox ได้เลยครับ','รับซื้อ / รับเทิร์น / แลกเปลี่ยน','นัดรับหรือจัดส่งทั่วไทย','เช็กสินค้าล่าสุด: https://clicko-store.github.io/');
+ out.push('สนใจสินค้า ทัก Inbox ได้เลยครับ','รับซื้อ / รับเทิร์น / แลกเปลี่ยน','นัดรับ · ส่งด่วน · ส่งทั่วไทย','เช็กสินค้าและสต๊อก: https://clicko-store.github.io/');
  return out.join('\n');
 }
 async function clickoCopyFacebook(all=false){
