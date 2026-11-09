@@ -197,6 +197,15 @@ th{background:#F6F6F6!important}
 .quick-price,.quick-status,.item-placeholder{background:#F8F8F8!important}
 .pill,.tag{background:#FCE8EC!important;color:#A60321!important}
 a:focus-visible,button:focus-visible{outline:3px solid #D90429!important;outline-offset:2px}
+</style><style id="clicko-admin-compact-panels">
+#clicko-finance.clicko-panel-collapsed > :not(:first-child),
+#clicko-backup-verify.clicko-panel-collapsed > :not(:first-child),
+#clicko-product-analytics.clicko-panel-collapsed > :not(:first-child),
+#clicko-quality-dashboard.clicko-panel-collapsed > :not(:first-child){display:none!important}
+.clicko-compact-panel-heading{display:flex!important;align-items:center;justify-content:space-between;gap:12px;cursor:pointer!important;margin:0!important;padding:5px 2px!important;min-height:34px;user-select:none}
+.clicko-compact-panel-heading:focus-visible{outline:2px solid #c62839;outline-offset:3px;border-radius:5px}
+.clicko-compact-panel-heading::after{content:"⌄";font-size:20px;line-height:1;color:#6b7280;transition:transform .15s ease}
+.clicko-panel-collapsed .clicko-compact-panel-heading::after{transform:rotate(-90deg)}
 </style></head><body>
 <header><div><h1>Clicko<span class="admin-title-accent">.</span> Admin</h1><span class="muted">จัดการร้านบนมือถือได้ทุกที่</span></div><div><a href="./orders.html">ออเดอร์ / กำไร</a> <a href="./sheets.html">Google Sheets</a> <a href="./backup.html">สำรองข้อมูล</a> <a href="./">หน้าร้าน ↗</a> <button id="logout" class="secondary hidden">ออกจากระบบ</button></div></header>
 <main><div id="notice"></div><section id="setup" class="panel hidden"><h2>ยังไม่ได้เชื่อมฐานข้อมูล</h2><p>สร้างโปรเจกต์ Supabase แล้วใส่ Project URL และ Publishable / anon key ในไฟล์ <code>supabase-config.js</code> บน GitHub ก่อนใช้งาน ไม่ต้องใส่ service_role key</p><p><a href="https://supabase.com/dashboard" target="_blank" rel="noopener">เปิด Supabase</a></p></section>
@@ -702,5 +711,22 @@ $('remove').onclick=()=>{if(!editing)return;const p=rows.find(row=>row.sku===edi
  const watcher=new MutationObserver(()=>{if(hasAccess()&&!root.dataset.loaded){root.dataset.loaded='1';load()}else if(!hasAccess())root.dataset.loaded=''});
  watcher.observe(document.getElementById('workspace')||document.body,{attributes:true,attributeFilter:['class'],subtree:false});
  setTimeout(()=>{if(hasAccess()){root.dataset.loaded='1';load()}},500);
+})();
+</script><script id="clicko-admin-compact-panels-script">
+(function(){
+ const ids=['clicko-finance','clicko-backup-verify','clicko-product-analytics','clicko-quality-dashboard'];
+ ids.forEach(id=>{
+  const panel=document.getElementById(id);if(!panel)return;
+  const heading=panel.querySelector(':scope > h3, :scope > strong');if(!heading)return;
+  panel.classList.add('clicko-panel-collapsed');
+  heading.classList.add('clicko-compact-panel-heading');
+  heading.setAttribute('role','button');heading.setAttribute('tabindex','0');heading.setAttribute('aria-expanded','false');
+  const toggle=()=>{
+   const collapsed=panel.classList.toggle('clicko-panel-collapsed');
+   heading.setAttribute('aria-expanded',String(!collapsed));
+  };
+  heading.addEventListener('click',toggle);
+  heading.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();toggle()}});
+ });
 })();
 </script></body></html>
