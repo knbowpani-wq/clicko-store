@@ -684,4 +684,46 @@ $('remove').onclick=()=>{if(!editing)return;const p=rows.find(row=>row.sku===edi
  observer.observe(document.getElementById('workspace'),{attributes:true,attributeFilter:['class']});
  if(access())load();
 })();
+</script><script id="clicko-appraisal-photos-admin">
+(function(){
+ const host=document.getElementById('ap-list'),panel=document.getElementById('clicko-appraisals');
+ if(!host||!panel)return;
+ const info=document.createElement('div');info.id='clicko-appraisal-new-alert';info.style.cssText='font-weight:700;color:#b5243a;margin:8px 0';panel.insertBefore(info,panel.querySelector('form'));
+ let active=false,rendering=false;
+ const money=n=>'฿'+Number(n).toLocaleString('th-TH',{maximumFractionDigits:2});
+ async function show(){
+  if(typeof authorized==='undefined'||!authorized||!db||rendering)return;
+  rendering=true;
+  try{
+   const {data,error}=await db.from('clicko_appraisals').select('id,product_name,photo_paths,status,created_at,requested_price,condition_note,warranty_note,accessories_note').order('created_at',{ascending:false}).limit(100);
+   if(error)throw error;
+   const entries=data||[],newItems=entries.filter(x=>x.status==='new'&&x.photo_paths&&x.photo_paths.length);
+   info.textContent='คำขอรับซื้อใหม่ '+entries.filter(x=>x.status==='new').length+' รายการ · คำขอพร้อมรูป '+newItems.length+' รายการ';
+   document.querySelectorAll('.clicko-ap-photo-gallery').forEach(el=>el.remove());
+   for(const item of entries){
+    if(!Array.isArray(item.photo_paths)||!item.photo_paths.length)continue;
+    const cards=Array.from(host.children).filter(x=>x.tagName==='DIV');
+    const card=cards.find(x=>x.querySelector('strong')?.textContent?.startsWith(item.product_name+' ·'));
+    if(!card)continue;
+    const wrap=document.createElement('div');wrap.className='clicko-ap-photo-gallery';wrap.style.cssText='display:flex;flex-wrap:wrap;gap:7px;margin:8px 0';
+    const label=document.createElement('small');label.textContent='รูปที่ลูกค้าส่ง '+item.photo_paths.length+' รูป';wrap.append(label);
+    const paths=item.photo_paths.filter(p=>typeof p==='string'&&p.startsWith('requests/')).slice(0,6);
+    for(const path of paths){
+     const {data:link,error:linkError}=await db.storage.from('clicko-trade-photos').createSignedUrl(path,1800);
+     if(linkError||!link?.signedUrl)continue;
+     const a=document.createElement('a');a.href=link.signedUrl;a.target='_blank';a.rel='noopener noreferrer';
+     const img=document.createElement('img');img.src=link.signedUrl;img.alt='รูปสินค้าจริงจากคำขอรับซื้อ';img.loading='lazy';img.style.cssText='width:76px;height:76px;object-fit:cover;border-radius:8px;border:1px solid #ddd';a.append(img);wrap.append(a);
+    }
+    card.append(wrap);
+   }
+  }catch(e){info.textContent='โหลดรูปคำขอไม่สำเร็จ: '+e.message}
+  finally{rendering=false}
+ }
+ const obs=new MutationObserver(()=>{if(!active&&typeof authorized!=='undefined'&&authorized&&db){active=true;setTimeout(show,600)}});
+ obs.observe(document.getElementById('workspace'),{attributes:true,attributeFilter:['class']});
+ const listObs=new MutationObserver(()=>{if(!active||rendering)return;clearTimeout(listObs._delay);listObs._delay=setTimeout(show,450)});
+ listObs.observe(host,{childList:true});
+ const refresh=document.getElementById('ap-refresh');if(refresh)refresh.addEventListener('click',()=>setTimeout(show,900));
+ if(typeof authorized!=='undefined'&&authorized&&db){active=true;show()}
+})();
 </script></body></html>
