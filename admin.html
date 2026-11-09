@@ -744,7 +744,7 @@ $('remove').onclick=()=>{if(!editing)return;const p=rows.find(row=>row.sku===edi
      if(typeof edit!=='function'){alert('กรุณาเปิดหน้าจัดการสินค้า');return}
      edit(null);
      document.getElementById('name').value=item.product_name;
-     document.getElementById('condition').value='มือ 2';
+     document.getElementById('condition').value='มือ2';
      document.getElementById('warranty').value=item.warranty_note||'';
      document.getElementById('note').value=[item.condition_note,item.accessories_note?'อุปกรณ์: '+item.accessories_note:''].filter(Boolean).join(' | ');
      alert('เตรียมข้อมูลสินค้าแล้ว กรุณาตรวจหมวดหมู่ รูปสินค้า ราคา และรหัส SKU ก่อนกดบันทึก ระบบยังไม่เพิ่มสินค้าอัตโนมัติ');
