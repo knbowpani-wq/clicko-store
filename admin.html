@@ -726,4 +726,35 @@ $('remove').onclick=()=>{if(!editing)return;const p=rows.find(row=>row.sku===edi
  const refresh=document.getElementById('ap-refresh');if(refresh)refresh.addEventListener('click',()=>setTimeout(show,900));
  if(typeof authorized!=='undefined'&&authorized&&db){active=true;show()}
 })();
+</script><script id="clicko-appraisal-to-stock">
+(function(){
+ const host=document.getElementById('ap-list');if(!host)return;
+ let busy=false;
+ async function enhance(){
+  if(busy||typeof authorized==='undefined'||!authorized||!db)return;busy=true;
+  try{
+   const {data,error}=await db.from('clicko_appraisals').select('id,product_name,condition_note,warranty_note,accessories_note,estimated_buy_price,status').eq('status','accepted').order('created_at',{ascending:false}).limit(100);
+   if(error)return;
+   const cards=Array.from(host.children).filter(x=>x.tagName==='DIV');
+   for(const item of data||[]){
+    const card=cards.find(x=>x.querySelector('strong')?.textContent?.startsWith(item.product_name+' ·'));
+    if(!card||card.querySelector('.clicko-ap-to-stock'))continue;
+    const button=document.createElement('button');button.type='button';button.className='secondary clicko-ap-to-stock';button.style.marginLeft='8px';button.textContent='สร้างรายการสต๊อกจากสินค้านี้';
+    button.onclick=()=>{
+     if(typeof edit!=='function'){alert('กรุณาเปิดหน้าจัดการสินค้า');return}
+     edit(null);
+     document.getElementById('name').value=item.product_name;
+     document.getElementById('condition').value='มือ 2';
+     document.getElementById('warranty').value=item.warranty_note||'';
+     document.getElementById('note').value=[item.condition_note,item.accessories_note?'อุปกรณ์: '+item.accessories_note:''].filter(Boolean).join(' | ');
+     alert('เตรียมข้อมูลสินค้าแล้ว กรุณาตรวจหมวดหมู่ รูปสินค้า ราคา และรหัส SKU ก่อนกดบันทึก ระบบยังไม่เพิ่มสินค้าอัตโนมัติ');
+    };card.append(button);
+   }
+  }finally{busy=false}
+ }
+ const observer=new MutationObserver(()=>{if(busy)return;clearTimeout(observer.delay);observer.delay=setTimeout(enhance,550)});
+ observer.observe(host,{childList:true});
+ const refresh=document.getElementById('ap-refresh');if(refresh)refresh.addEventListener('click',()=>setTimeout(enhance,850));
+ const workspace=document.getElementById('workspace');if(workspace)new MutationObserver(()=>{if(typeof authorized!=='undefined'&&authorized)setTimeout(enhance,850)}).observe(workspace,{attributes:true,attributeFilter:['class']});
+})();
 </script></body></html>
