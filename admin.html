@@ -598,7 +598,7 @@ $('remove').onclick=()=>{if(!editing)return;const p=rows.find(row=>row.sku===edi
    for(const p of rows){const opt=document.createElement('option');opt.value=p.sku;opt.label=p.name;dl.append(opt)}
    const orders=o.data||[];
    // Only completed orders are revenue; pending/cancelled are excluded.
-   const completed=orders.filter(x=>['completed','delivered','paid','sold'].includes(String(x.status||'').toLowerCase()));
+   const completed=orders.filter(x=>['completed','delivered','paid','shipped','sold'].includes(String(x.status||'').toLowerCase()));
    const groups=new Map();let revenue=0,profit=0,known=0;
    for(const o of completed){
     const amount=Number(o.sell_price||0),base=o.cost_snapshot===null||o.cost_snapshot===undefined?costs.get(o.sku):Number(o.cost_snapshot);
