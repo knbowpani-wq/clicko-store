@@ -342,8 +342,10 @@ function clickoAdminDisplayName(p){
   else if(/(?:SOUND\s*CARD|SOUNDCARD|ซาวด์การ์ด|ซาวการ์ด|AUDIO\s*INTERFACE|GOXLR|SCARLETT|SOUNDBLASTER|SOUND\s*BLASTER|CREATIVE\s*G[356]|GSX\s*1000|MIXAMP|DAC\b|AMP\b)/i.test(hint))type='ซาวการ์ด';
   else if(/(?:QUADCAST|SOLOCAST|MICROPHONE|\bMIC\b|ไมโครโฟน|ไมโครโฟม|YETI|SEIREN|MV7|PODMIC|WAVE:?[13]\b|AT2020|FIFINE|MAONO)/i.test(hint))type='ไมโครโฟน';
   else if(/(?:SPEAKER|EMBERTON|DITOO|ลำโพง)/i.test(hint))type='ลำโพง';
+  else if(/หูฟังมีสาย|\bWIRED\b/i.test(sub))type='หูฟังมีสาย';
+  else if(/หูฟังไร้สาย|\bWIRELESS\b|\bBLUETOOTH\b/i.test(sub)||/WIRELESS|LIGHTSPEED|GAMEBUDS|BLUETOOTH/i.test(original))type='หูฟังไร้สาย';
   else if(/(?:IEM|IN.EAR|KEFINE|SIMGOT|KIWI\s*EARS|ZIIGAAT|ASTRAL|SUPERMIX|EW300)/i.test(hint))type='หูฟัง IEM';
-  else if(/(?:EARBUD|IN.EAR|หูฟัง|HEADSET|HEADPHONE|EARPHONE|CLOUD|ARCTIS|LIGHTSPEED|DT\s?990|HD\s?550|KEFINE|SIMGOT|KIWI\s*EARS|ZIIGAAT|ASTRAL|SUPERMIX|EW300|GAMEBUDS)/i.test(hint))type='หูฟัง';
+  else if(/(?:EARBUD|IN.EAR|หูฟัง|HEADSET|HEADPHONE|EARPHONE|CLOUD|ARCTIS|DT\s?990|HD\s?550|KEFINE|SIMGOT|KIWI\s*EARS|ZIIGAAT|ASTRAL|SUPERMIX|EW300)/i.test(hint))type='หูฟังมีสาย';
  }else if(cat==='MONITOR & ACCESSORIES')type=/MONITOR|จอ|XL25|AW25|AW27|MPG 27|XQ25/i.test(original+' '+sub)?'จอมอนิเตอร์':'';
  else if(cat==='GAMEPAD & USB HUB')type=/HUB/i.test(original+' '+sub)?'USB HUB':'จอยเกม';
  else if(cat==='PC PARTS'){
@@ -353,7 +355,7 @@ function clickoAdminDisplayName(p){
   else if(/\bCASE\b|\bCHASSIS\b|JONSBO TK/i.test(original))type='เคส';
  }
  if(!type)return original;
- if(/^(?:เมาส์|ไมโครโฟน|คีย์บอร์ด|แผ่นรองเมาส์(?:กระจก|ผ้า)?|หูฟัง(?: IEM)?|ลำโพง|จอมอนิเตอร์|จอเกมมิ่ง|จอยเกม|ซีพียู|การ์ดจอ|แรม|เคส|USB HUB|ซาวการ์ด|ซาวด์การ์ด|ขาไมค์)\s*/i.test(original))return original;
+ if(/^(?:เมาส์|ไมโครโฟน|คีย์บอร์ด|แผ่นรองเมาส์(?:กระจก|ผ้า)?|หูฟัง(?: IEM|มีสาย|ไร้สาย)?|ลำโพง|จอมอนิเตอร์|จอเกมมิ่ง|จอยเกม|ซีพียู|การ์ดจอ|แรม|เคส|USB HUB|ซาวการ์ด|ซาวด์การ์ด|ขาไมค์)\s*/i.test(original))return original;
  return type+' '+original;
 }
 function list(){
