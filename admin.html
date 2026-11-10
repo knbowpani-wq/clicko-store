@@ -328,6 +328,30 @@ async function uploadExtras(sku){
  }
  return saved;
 }
+function clickoAdminDisplayName(p){
+ const original=String(p?.name||'').trim();if(!original)return original;
+ const cat=String(p?.category||'').toUpperCase(),sub=String(p?.sub||'').toUpperCase();
+ let type='';
+ if(cat==='GAMING MOUSE')type='เมาส์';
+ else if(cat==='GLASS MOUSEPAD')type='แผ่นรองเมาส์กระจก';
+ else if(cat==='MOUSEPAD')type=/GLASS|กระจก/i.test(original+' '+sub)?'แผ่นรองเมาส์กระจก':'แผ่นรองเมาส์';
+ else if(cat==='KEYBOARD'||cat==='MAGNETIC KEYBOARD')type='คีย์บอร์ด';
+ else if(cat==='AUDIO'){
+  if(/QUADCAST|MICROPHONE|\bMIC\b|ไมโครโฟน/i.test(original+' '+sub))type='ไมโครโฟน';
+  else if(/SPEAKER|EMBERTON|DITOO|ลำโพง/i.test(original+' '+sub))type='ลำโพง';
+  else type='หูฟัง';
+ }else if(cat==='MONITOR & ACCESSORIES')type=/MONITOR|จอ|XL25|AW25|AW27|MPG 27|XQ25/i.test(original+' '+sub)?'จอมอนิเตอร์':'';
+ else if(cat==='GAMEPAD & USB HUB')type=/HUB/i.test(original+' '+sub)?'USB HUB':'จอยเกม';
+ else if(cat==='PC PARTS'){
+  if(/\bRTX\b|\bGTX\b|RADEON|RX ?[56789]\d{3}/i.test(original))type='การ์ดจอ';
+  else if(/RYZEN|\bCORE I[3579]\b|\bCPU\b/i.test(original))type='ซีพียู';
+  else if(/\bDDR[345]\b|\bRAM\b/i.test(original))type='แรม';
+  else if(/\bCASE\b|\bCHASSIS\b|JONSBO TK/i.test(original))type='เคส';
+ }
+ if(!type)return original;
+ if(/^(?:เมาส์|ไมโครโฟน|คีย์บอร์ด|แผ่นรองเมาส์(?:กระจก|ผ้า)?|หูฟัง|ลำโพง|จอมอนิเตอร์|จอเกมมิ่ง|จอยเกม|ซีพียู|การ์ดจอ|แรม|เคส|USB HUB)\s*/i.test(original))return original;
+ return type+' '+original;
+}
 function list(){
  const q=$('search').value.trim().toLocaleLowerCase(),filter=$('stock-filter').value;
  const stats={available:0,reserved:0,sold:0};
@@ -336,7 +360,7 @@ function list(){
  for(const key of Object.keys(stats))$('stock-'+key).textContent=stats[key];
  $('stock-no-image').textContent=rows.filter(p=>!p.is_hidden&&!p.image&&!photoRows.some(g=>g.sku===p.sku&&g.image_url)).length;
  $('stock-no-price').textContent=rows.filter(p=>!p.is_hidden&&p.price===null).length;
- const shown=rows.filter(p=>(p.sku+' '+p.name+' '+p.category+' '+p.sub).toLocaleLowerCase().includes(q)&&(filter==='all'||(filter==='hidden'?p.is_hidden:filter==='missing-image'?!p.is_hidden&&!p.image&&!photoRows.some(g=>g.sku===p.sku&&g.image_url):filter==='missing-image-available'?!p.is_hidden&&stockStatus(p)==='available'&&!p.image&&!photoRows.some(g=>g.sku===p.sku&&g.image_url):filter==='missing-price-available'?!p.is_hidden&&stockStatus(p)==='available'&&p.price===null:filter==='missing-price'?!p.is_hidden&&p.price===null:!p.is_hidden&&stockStatus(p)===filter)));
+ const shown=rows.filter(p=>(p.sku+' '+clickoAdminDisplayName(p)+' '+p.category+' '+p.sub).toLocaleLowerCase().includes(q)&&(filter==='all'||(filter==='hidden'?p.is_hidden:filter==='missing-image'?!p.is_hidden&&!p.image&&!photoRows.some(g=>g.sku===p.sku&&g.image_url):filter==='missing-image-available'?!p.is_hidden&&stockStatus(p)==='available'&&!p.image&&!photoRows.some(g=>g.sku===p.sku&&g.image_url):filter==='missing-price-available'?!p.is_hidden&&stockStatus(p)==='available'&&p.price===null:filter==='missing-price'?!p.is_hidden&&p.price===null:!p.is_hidden&&stockStatus(p)===filter)));
  $('result-count').textContent=shown.length+' / '+rows.length+' รายการ';
  $('search-clear').hidden=!$('search').value;
  $('items').innerHTML=shown.length?shown.map(p=>{
@@ -344,7 +368,7 @@ function list(){
    const sku=esc(p.sku);
    return '<article class="item" data-product-id="'+sku+'">'+
      (p.image?'<img src="'+esc(p.image)+'" alt="" loading="lazy">':'<div class="item-placeholder" aria-hidden="true">⌨</div>')+
-     '<div class="meta"><strong>'+esc(p.name)+'</strong><small>'+sku+' · '+esc(p.condition)+' · '+esc(p.category)+'</small><span class="stock-badge status-'+state+'">'+(p.is_hidden?'ซ่อนแล้ว':STOCK_LABELS[state])+'</span></div>'+
+     '<div class="meta"><strong>'+esc(clickoAdminDisplayName(p))+'</strong><small>'+sku+' · '+esc(p.condition)+' · '+esc(p.category)+'</small><span class="stock-badge status-'+state+'">'+(p.is_hidden?'ซ่อนแล้ว':STOCK_LABELS[state])+'</span></div>'+
      '<div class="item-controls"><div class="quick-price"><label for="price-'+sku+'">ราคา (฿)</label><div class="quick-price-row"><input id="price-'+sku+'" data-price-sku="'+sku+'" type="number" inputmode="numeric" min="0" step="1" value="'+(p.price===null?'':Number(p.price))+'" placeholder="ไม่ระบุ" aria-label="ราคา '+esc(p.name)+'"><button type="button" class="quick-save" data-save-price="'+sku+'" disabled>บันทึก</button></div></div>'+
      '<div class="quick-status"><label for="status-'+sku+'">สถานะ</label><select id="status-'+sku+'" data-stock-sku="'+sku+'" aria-label="สถานะ '+esc(p.name)+'"'+(p.is_hidden?' disabled':'')+'>'+stockOptions(stockStatus(p))+'</select></div>'+
      '<button type="button" class="secondary edit-mini" data-sku="'+sku+'">แก้ไขรายละเอียด ↗</button>'+(p.is_hidden?'<button type="button" class="secondary edit-mini" data-unhide="'+sku+'">นำกลับมาแสดง</button>':'')+'</div>'+
@@ -449,13 +473,13 @@ function clickoFacebookText(items){
    out.push(label);
    for(const p of section){
     const price=p.price===null||p.price===undefined||p.price===''?'สอบถามราคา':Number(p.price).toLocaleString('th-TH')+' บาท';
-    out.push('• '+String(p.name||'ไม่ระบุชื่อ').trim()+' — '+price+(p.warranty?' | ประกัน '+String(p.warranty).trim():''));
+    out.push('• '+clickoAdminDisplayName(p)+' — '+price+(p.warranty?' | ประกัน '+String(p.warranty).trim():''));
    }
   }
   const other=products.filter(p=>p.condition!=='มือ1'&&p.condition!=='มือ2').sort((a,b)=>String(a.name||'').localeCompare(String(b.name||''),'th',{numeric:true}));
   if(other.length){
    out.push('ไม่ระบุสภาพ');
-   for(const p of other)out.push('• '+String(p.name||'ไม่ระบุชื่อ').trim()+' — '+(p.price===null||p.price===undefined?'สอบถามราคา':Number(p.price).toLocaleString('th-TH')+' บาท')+(p.warranty?' | ประกัน '+String(p.warranty).trim():''));
+   for(const p of other)out.push('• '+clickoAdminDisplayName(p)+' — '+(p.price===null||p.price===undefined?'สอบถามราคา':Number(p.price).toLocaleString('th-TH')+' บาท')+(p.warranty?' | ประกัน '+String(p.warranty).trim():''));
   }
   out.push('');
  }
