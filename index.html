@@ -1692,7 +1692,7 @@ function clickoApplyAdminRows(){
   id:p.sku,name:clickoDisplayProductName(p),category:p.category||'อื่นๆ',sub:p.sub||'',condition:p.condition||'มือ2',
   price:p.price===null?null:Number(p.price),warranty:p.warranty||'',sold:!!p.sold,
   is_hidden:false,stock_status:p.stock_status||(p.sold?'sold':'available'),
-  created_at:p.created_at||null,specs:p.specs||'',note:p.note||'',
+  created_at:p.created_at||null,sold_at:p.sold_at||null,sold_price:p.sold_price==null?null:Number(p.sold_price),specs:p.specs||'',note:p.note||'',
   image:p.image||(clickoGalleryPhotos.get(String(p.sku))||[])[0]||(p.manufacturer_image_verified?p.manufacturer_image_url:'')||'',
   manufacturer_image_url:p.manufacturer_image_url||'',manufacturer_image_verified:!!p.manufacturer_image_verified,
   search:'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(p.name+' product')
@@ -1701,6 +1701,7 @@ function clickoApplyAdminRows(){
  categories.splice(0,categories.length,'ทั้งหมด',...new Set(products.map(p=>p.category)));
  if(!categories.includes(category))category='ทั้งหมด';
  draw();
+ if(typeof window.clickoRefreshSalesHistory==='function')window.clickoRefreshSalesHistory();
 }
 async function clickoLoadAdminRows(){
  const cfg=window.CLICKO_SUPABASE||{};
@@ -1730,7 +1731,7 @@ async function clickoLoadAdminRows(){
    const fallback=clickoAdminRows.filter(p=>!p.is_hidden).map(p=>({
     id:p.sku,name:p.name,category:p.category||'อื่นๆ',sub:p.sub||'',condition:p.condition||'มือ2',
     price:p.price==null?null:Number(p.price),warranty:p.warranty||'',sold:!!p.sold,
-    stock_status:p.stock_status||(p.sold?'sold':'available'),created_at:p.created_at||null,
+    stock_status:p.stock_status||(p.sold?'sold':'available'),created_at:p.created_at||null,sold_at:p.sold_at||null,sold_price:p.sold_price==null?null:Number(p.sold_price),
     specs:p.specs||'',note:p.note||'',image:p.image||'',
     search:'https://www.google.com/search?tbm=isch&q='+encodeURIComponent(p.name+' product')
    }));
@@ -2128,6 +2129,6 @@ function refresh(){const q=search.value.trim().toLocaleLowerCase('th-TH'),m=mont
 rows.innerHTML=filtered.length?filtered.map(p=>'<tr><td>'+safe(thaiDate(p))+'</td><td><small>'+safe(p.id)+'</small><strong>'+safe(p.name)+'</strong></td><td>'+safe(p.condition||'-')+'</td><td>'+safe(money(p.sale_price??p.sold_price??null))+'</td><td>'+safe(p.warranty||'-')+'</td></tr>').join(''):'<tr><td colspan="5">ไม่พบประวัติการขายตามตัวกรอง</td></tr>';
 summary.textContent='ขายแล้วทั้งหมด '+sold.length+' รายการ · แสดง '+filtered.length+' รายการ · มีวันที่ขาย '+filtered.filter(p=>dateOf(p)).length+' รายการ';
 const lines=['📦 CLICKO | GAMING GEAR & PC PARTS','ขอบคุณลูกค้าทุกท่านที่สนับสนุนร้านครับ ❤️','','✅ รายการสินค้าที่ขายแล้ว ('+filtered.length+' รายการ)','━━━━━━━━━━━━━━━━━━'];let last=null;for(const p of filtered){const day=thaiDate(p);if(day!==last){lines.push('','📅 '+day);last=day}lines.push('❌ '+(p.condition==='มือ1'?'📦':'♻️')+' '+p.name+(p.warranty?' | ประกัน '+p.warranty:''));}lines.push('','━━━━━━━━━━━━━━━━━━','เช็กสินค้าใหม่ได้ที่ https://clicko-store.github.io/','รับซื้อ / รับเทิร์น / แลกเปลี่ยน · ส่งด่วน กทม. / พัสดุทั่วไทย');field.value=lines.join('\n');}
-search.addEventListener('input',refresh);month.addEventListener('change',refresh);clear.addEventListener('click',()=>{search.value='';month.value='';refresh()});refresh();
+window.clickoRefreshSalesHistory=refresh;search.addEventListener('input',refresh);month.addEventListener('change',refresh);clear.addEventListener('click',()=>{search.value='';month.value='';refresh()});refresh();
 button.addEventListener('click',async()=>{try{if(navigator.clipboard&&window.isSecureContext){await navigator.clipboard.writeText(field.value)}else{field.focus();field.select();if(!document.execCommand('copy'))throw Error('copy unavailable')}feedback.textContent='คัดลอกข้อความแล้ว นำไปวางบน Facebook ได้เลย';}catch(e){feedback.textContent='กรุณาเลือกข้อความแล้วกด Ctrl+C';}});
 })();</script></body></html>
