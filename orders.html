@@ -127,7 +127,7 @@ th{background:#F6F6F6!important}
 a:focus-visible,button:focus-visible{outline:3px solid #D90429!important;outline-offset:2px}
 </style></head>
 <body>
-<header><div><strong>Clicko<span>.</span> Back Office</strong><small>ออเดอร์ · ต้นทุน · กำไร</small></div><nav><a href="./admin.html">สินค้า</a><a href="./sheets.html">Google Sheets</a><a href="./backup.html">สำรองข้อมูล</a><a href="./">หน้าร้าน ↗</a><button type="button" id="logout" class="secondary hidden">ออกจากระบบ</button></nav></header>
+<header><div><strong>Clicko<span>.</span> Back Office</strong><small>ออเดอร์ · ต้นทุน · กำไร</small></div><nav><a href="./admin.html">สินค้า</a><a href="./inventory.html">สต๊อกเข้า–ออก</a><a href="./sheets.html">Google Sheets</a><a href="./backup.html">สำรองข้อมูล</a><a href="./">หน้าร้าน ↗</a><button type="button" id="logout" class="secondary hidden">ออกจากระบบ</button></nav></header>
 <main>
 <p id="notice" role="status" aria-live="polite"></p>
 <section id="login" class="panel"><h1>เข้าสู่ระบบผู้ดูแลร้าน</h1><p class="muted">ใช้บัญชี Admin เดียวกับหน้าจัดการสินค้า Clicko</p><form id="login-form"><div class="form-grid"><div><label for="email">อีเมล</label><input id="email" type="email" required autocomplete="username"></div><div><label for="password">รหัสผ่าน</label><input id="password" type="password" required autocomplete="current-password"></div></div><div class="actions"><button type="submit">เข้าสู่ระบบ</button></div></form></section>
@@ -138,7 +138,7 @@ a:focus-visible,button:focus-visible{outline:3px solid #D90429!important;outline
 <div class="metric"><span>กำไรที่คำนวณได้</span><strong id="metric-profit">฿0</strong><small id="metric-profit-note"></small></div>
 <div class="metric"><span>รอชำระเงิน</span><strong id="metric-pending">0</strong></div></div><div id="order-alerts" class="pending-alerts" role="status" aria-live="polite"></div>
 <p class="warning" style="margin-bottom:0"><strong>ระบบเชื่อมสต๊อกอัตโนมัติแล้ว:</strong> บันทึกออเดอร์ “รอชำระเงิน” = จองสินค้า, “ชำระแล้ว” = ขายแล้ว, “ยกเลิกก่อนจัดส่ง” = กลับมาพร้อมขาย และไม่สามารถจองสินค้าชิ้นเดียวซ้ำได้ · การเปลี่ยนสถานะไม่ได้ตรวจสอบยอดเงินกับธนาคารหรือดำเนินการคืนเงินจริง</p></div>
-<div class="tabs"><button class="tab active" type="button" data-tab="orders">ออเดอร์</button><button class="tab" type="button" data-tab="costs">ต้นทุนสินค้า</button></div>
+<div class="tabs"><button class="tab active" type="button" data-tab="orders">ออเดอร์</button><button class="tab" type="button" data-tab="costs">ต้นทุนสินค้า</button><a href="./inventory.html" class="tab" style="display:inline-flex;align-items:center;text-decoration:none">สต๊อกเข้า–ออก / ใบเสร็จ ↗</a></div>
 <section id="orders-tab">
 <div class="panel"><h2>+ บันทึกออเดอร์ใหม่</h2><form id="order-form"><div class="form-grid">
 <div class="full"><label for="order-sku">เลือกสินค้าในระบบ</label><select id="order-sku" required><option value="">— เลือกสินค้า —</option></select></div>
