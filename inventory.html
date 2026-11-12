@@ -1,5 +1,40 @@
 <!doctype html><html lang="th"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CLICKO | สต๊อกสินค้าเข้า–ออก</title><style>
-*{box-sizing:border-box}body{font:14px system-ui,sans-serif;color:#171717;background:#f6f6f6;margin:0;padding:16px}h1{font-size:23px;margin:0 0 5px}h2{font-size:17px;margin:0 0 12px}.muted{color:#666;font-size:12px}.panel{background:white;border:1px solid #e5e5e5;border-radius:15px;padding:17px;margin:12px 0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}label{display:block;font-size:12px;font-weight:700;margin:0 0 5px}input,select,textarea{width:100%;padding:10px;border:1px solid #d7d7d7;border-radius:9px;font:inherit;background:white}textarea{min-height:65px}button{background:#151515;color:white;border:0;border-radius:9px;padding:10px 14px;cursor:pointer;font-weight:700}button:disabled{opacity:.5}.secondary{background:#fce8ec;color:#a60321}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{background:#fafafa;padding:13px;border:1px solid #eee;border-radius:11px}.stat strong{display:block;font-size:21px;color:#c70023}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{text-align:left;border-bottom:1px solid #eee;padding:11px 8px;vertical-align:middle}th{font-size:12px;background:#fafafa}td{font-size:12px}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.hidden{display:none!important}#msg{white-space:pre-wrap;color:#a60321;font-weight:700}a{color:#b60027} @media(max-width:750px){.grid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}}@media(max-width:450px){.grid{grid-template-columns:1fr}}.search-options{max-height:220px;overflow:auto;border:1px solid #ddd;border-radius:9px;margin-top:5px}.search-options button{display:block;width:100%;text-align:left;background:#fff;color:#222;border-radius:0;border-bottom:1px solid #eee}.search-options button:hover{background:#fce8ec}.profit-preview{background:#fafafa;padding:12px;border-radius:10px;font-weight:700}.history{font-size:12px;max-height:260px;overflow:auto}.history>div{padding:8px 0;border-bottom:1px solid #eee}</style></head><body>
+*{box-sizing:border-box}body{font:14px system-ui,sans-serif;color:#171717;background:#f6f6f6;margin:0;padding:16px}h1{font-size:23px;margin:0 0 5px}h2{font-size:17px;margin:0 0 12px}.muted{color:#666;font-size:12px}.panel{background:white;border:1px solid #e5e5e5;border-radius:15px;padding:17px;margin:12px 0}.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}label{display:block;font-size:12px;font-weight:700;margin:0 0 5px}input,select,textarea{width:100%;padding:10px;border:1px solid #d7d7d7;border-radius:9px;font:inherit;background:white}textarea{min-height:65px}button{background:#151515;color:white;border:0;border-radius:9px;padding:10px 14px;cursor:pointer;font-weight:700}button:disabled{opacity:.5}.secondary{background:#fce8ec;color:#a60321}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:9px}.stat{background:#fafafa;padding:13px;border:1px solid #eee;border-radius:11px}.stat strong{display:block;font-size:21px;color:#c70023}.scroll{overflow:auto}table{width:100%;border-collapse:collapse;min-width:850px}th,td{text-align:left;border-bottom:1px solid #eee;padding:11px 8px;vertical-align:middle}th{font-size:12px;background:#fafafa}td{font-size:12px}.actions{display:flex;gap:8px;flex-wrap:wrap;align-items:center}.hidden{display:none!important}#msg{white-space:pre-wrap;color:#a60321;font-weight:700}a{color:#b60027} @media(max-width:750px){.grid{grid-template-columns:1fr 1fr}.stats{grid-template-columns:1fr 1fr}}@media(max-width:450px){.grid{grid-template-columns:1fr}}.search-options{max-height:220px;overflow:auto;border:1px solid #ddd;border-radius:9px;margin-top:5px}.search-options button{display:block;width:100%;text-align:left;background:#fff;color:#222;border-radius:0;border-bottom:1px solid #eee}.search-options button:hover{background:#fce8ec}.profit-preview{background:#fafafa;padding:12px;border-radius:10px;font-weight:700}.history{font-size:12px;max-height:260px;overflow:auto}.history>div{padding:8px 0;border-bottom:1px solid #eee}
+/* CLICKO mobile inventory layout */
+@media(max-width:750px){
+ body{padding:12px 12px 90px;font-size:14px;background:#f5f6f7}
+ h1{font-size:21px;letter-spacing:-.4px}h2{font-size:16px}
+ .panel{padding:15px 13px;margin:12px 0;border-radius:14px}
+ .stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+ .stat{padding:12px;min-width:0}.stat strong{font-size:22px}
+ .grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:13px 10px}
+ .grid>div{min-width:0}
+ input,select,textarea{font-size:16px;min-height:44px;max-width:100%}
+ input[type=file]{font-size:12px;padding:10px 7px}
+ button{min-height:42px}
+ .search-options{position:relative;z-index:2}
+ #form>.actions{position:sticky;bottom:8px;z-index:4;background:rgba(255,255,255,.96);padding:9px;border:1px solid #e5e5e5;border-radius:12px;box-shadow:0 5px 20px #00000012}
+ #save{flex:1;min-height:46px}
+ .scroll{overflow:visible}table{min-width:0;display:block}thead{display:none}tbody{display:grid;gap:10px}
+ tr{display:block;background:#fff;border:1px solid #e8e8e8;border-radius:12px;padding:10px 12px}
+ td{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;border:0;padding:6px 0;font-size:12px;overflow-wrap:anywhere}
+ td:first-child{display:block;font-size:14px;border-bottom:1px solid #eee;padding-bottom:10px;margin-bottom:5px}
+ td:first-child strong{font-size:14px}
+ td:not(:first-child)::before{content:"";color:#777;flex:0 0 36%;font-weight:500}
+ td:nth-child(2)::before{content:"หมวด / ประกัน"}td:nth-child(3)::before{content:"ซื้อเข้า / ค้างสต๊อก"}
+ td:nth-child(4)::before{content:"ราคาซื้อ"}td:nth-child(5)::before{content:"ราคาขาย"}
+ td:nth-child(6)::before{content:"กำไร"}td:nth-child(7)::before{content:"ผู้ขาย"}
+ td:nth-child(8)::before{content:"สถานะ"}td:nth-child(9)::before{content:"จัดการ"}
+ td[colspan]{display:block}td[colspan]::before{display:none}
+ td button{min-height:36px}
+}
+@media(max-width:480px){
+ .grid{grid-template-columns:1fr}
+ .panel{padding:14px 12px}
+ .stat{padding:10px}.stat strong{font-size:20px}
+ #form>.actions{bottom:6px}
+}
+</style></head><body>
 <h1>สต๊อกสินค้าเข้า–ออก</h1><p class="muted">ข้อมูลต้นทุน ผู้รับซื้อ และใบเสร็จ สำหรับผู้ดูแลร้านเท่านั้น · เชื่อมรายการสินค้า Clicko เดิม</p><p id="msg"></p><section id="locked" class="panel">กรุณาเข้าสู่ระบบผู้ดูแลร้านผ่านหน้าออเดอร์ก่อน</section>
 <div id="app" class="hidden"><div class="stats"><div class="stat">พร้อมขาย<strong id="available">0</strong></div><div class="stat">จอง<strong id="reserved">0</strong></div><div class="stat">ขายแล้ว<strong id="sold">0</strong></div><div class="stat">ต้นทุนสต๊อกพร้อมขาย<strong id="capital">฿0</strong></div></div>
 <section class="panel"><h2>บันทึกข้อมูลรับเข้าสินค้า</h2><form id="form"><div class="grid">
