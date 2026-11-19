@@ -1,0 +1,29 @@
+/* CLICKO Minimal Premium catalog — presentation only, no stock or product logic changes */
+#catalog{--premium-ink:#151a23;--premium-blue:#2563eb;--premium-line:#e5e9f0;--premium-muted:#697586}
+#catalog .catalog-heading,#catalog .section{gap:12px}
+#catalog .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:16px!important;align-items:stretch}
+#catalog .card{border:1px solid var(--premium-line)!important;border-radius:17px!important;background:#fff!important;box-shadow:0 2px 12px rgba(20,30,50,.035)!important;transition:border-color .2s,box-shadow .2s,transform .2s!important}
+#catalog .card:hover{border-color:#b7c8e8!important;box-shadow:0 12px 30px rgba(20,30,50,.09)!important;transform:translateY(-2px)!important}
+#catalog .pic{aspect-ratio:1.32/1!important;min-height:0!important;height:auto!important;background:#f8fafc!important;border-bottom:1px solid #edf0f5!important}
+#catalog .pic img{object-fit:contain!important;padding:10px!important;background:transparent!important}
+#catalog .info{padding:14px 15px 12px!important;gap:0!important}
+#catalog .card .sub{font-size:10px!important;letter-spacing:.03em!important;color:var(--premium-muted)!important;margin:5px 0 4px!important}
+#catalog .card .name{font-size:13px!important;line-height:1.48!important;font-weight:750!important;color:var(--premium-ink)!important;min-height:2.96em!important;max-height:4.44em!important;display:-webkit-box!important;-webkit-box-orient:vertical!important;-webkit-line-clamp:3!important;overflow:hidden!important}
+#catalog .card .warranty,#catalog .card .specs{font-size:10.5px!important;line-height:1.55!important;color:#647084!important;font-weight:500!important;margin-top:7px!important}
+#catalog .card .bottom{padding-top:12px!important}
+#catalog .card .price{font-size:22px!important;letter-spacing:-.5px!important;line-height:1.25!important;color:var(--premium-blue)!important;font-weight:850!important}
+#catalog .card .tag{font-size:10px!important;padding:5px 8px!important;border-radius:7px!important;letter-spacing:0!important}
+#catalog .card .tag.used{background:#1e293b!important;color:#fff!important}
+#catalog .card .tag:not(.used):not(.sold){background:#2563eb!important;color:#fff!important}
+#catalog .card .ask:not(.sold-button):not(.reserved-button){background:#171b22!important;border-color:#171b22!important;color:#fff!important;border-radius:9px!important;font-size:11px!important;padding:10px 8px!important;margin-top:10px!important}
+#catalog .card .ask:hover{filter:brightness(1.15)}
+#catalog .clicko-card-tools{gap:7px!important}
+#catalog .clicko-card-tools button{border-radius:9px!important;font-weight:650!important}
+#catalog .chip{border-radius:10px!important;border-color:#e3e8ef!important}
+#catalog .chip.active{background:#eaf2ff!important;border-color:#b8d0ff!important;color:#175bd5!important}
+#catalog .search:focus-visible,#catalog .filter:focus-visible,#catalog button:focus-visible,#catalog a:focus-visible{outline:2px solid #2563eb!important;outline-offset:2px}
+@media(min-width:1450px){#catalog .grid{grid-template-columns:repeat(4,minmax(0,1fr))!important}}
+@media(max-width:1000px){#catalog .grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media(max-width:700px){#catalog .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}#catalog .card{border-radius:13px!important}#catalog .pic{aspect-ratio:1.12/1!important}#catalog .pic img{padding:7px!important}#catalog .info{padding:10px!important}#catalog .card .name{font-size:12px!important}#catalog .card .price{font-size:19px!important}#catalog .card .ask{font-size:10px!important}}
+@media(max-width:360px){#catalog .grid{gap:7px!important}#catalog .info{padding:8px!important}}
+@media(prefers-reduced-motion:reduce){#catalog .card{transition:none!important}#catalog .card:hover{transform:none!important}}
